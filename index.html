@@ -1,0 +1,167 @@
+<!doctype html>
+<!-- Smart Expense Tracker — Annotated UI Prototype
+     This file is the same UI you had, but with line-by-line comments
+     explaining what each part does. Use this to learn or to copy parts
+     into your own project. -->
+<html lang="en">
+
+<head>
+    <!-- Document metadata -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Smart Expense Tracker</title>
+    <link rel="stylesheet" href="style.css" title="Main Stylesheet" />
+</head>
+
+<body>
+    <!-- Page container -->
+    <div class="container">
+        <header>
+            <!-- Brand (logo + title) -->
+            <div class="brand">
+                <div class="logo">$</div>
+                <div>
+                    <h1>Smart Expense Tracker</h1>
+                    <div class="small">Track, Analyze & Predict your spending</div>
+                </div>
+            </div>
+
+            <!-- Controls: welcome text, import and add buttons -->
+            <div class="controls">
+                <div class="small muted">Welcome, DeveloperFanidhar</div>
+                <button class="ghost" id="importBtn">Import</button>
+                <button class="btn" id="addBtn">+ Add Expense</button>
+            </div>
+        </header>
+
+        <!-- Main layout: sidebar + content -->
+        <main>
+            <aside class="sidebar">
+                <div class="card">
+                    <div class="summary">
+                        <div class="wallet">
+                            <div>
+                                <div class="small">Current Month Spending</div>
+                                <!-- Amount element updated by JS -->
+                                <div class="amount" id="monthAmount">₹0</div>
+                            </div>
+                            <div class="small muted">Limit: ₹50,000</div>
+                        </div>
+
+                        <!-- Quick action buttons -->
+                        <div class="add-expense">
+                            <button class="btn" id="quickAddBtn">Quick Add</button>
+                            <button class="ghost" id="viewAllBtn">View All</button>
+                        </div>
+
+                        <!-- Filters: category + date range -->
+                        <div class="filters">
+                            <label class="small muted">Filter by category</label>
+                            <select id="categoryFilter" class="select">
+                                <option value="all">All</option>
+                                <option value="Food">Food</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Groceries">Groceries</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Other">Other</option>
+                            </select>
+
+                            <label class="small muted" style="margin-top:10px;display:block">From / To</label>
+                            <input type="date" id="fromDate" />
+                            <input type="date" id="toDate" style="margin-top:8px" />
+                            <button class="btn" id="applyFilter" style="margin-top:10px">Apply</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Small quick-stats card -->
+                <div class="card" style="margin-top:12px">
+                    <div class="small muted">Quick stats</div>
+                    <div style="display:flex;gap:8px;margin-top:8px">
+                        <div class="chip">Expenses: <strong id="count">0</strong></div>
+                        <div class="chip">Avg/day: <strong id="avg">₹0</strong></div>
+                    </div>
+                </div>
+
+            </aside>
+
+            <section>
+                <div class="top-row">
+                    <div class="stats">
+                        <div class="stat">
+                            <h3>Monthly trend</h3>
+                            <!-- Chart drawn via canvas in JS -->
+                            <div class="chart-wrap card"><canvas id="trendChart" width="600" height="220"></canvas>
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <h3>Prediction</h3>
+                            <div style="margin-top:10px">
+                                <div class="small muted">Next month predicted spend</div>
+                                <!-- Predicted value updated by JS -->
+                                <div style="font-size:20px;font-weight:700;margin-top:8px" id="predVal">₹0</div>
+                                <div class="small muted" style="margin-top:6px">Based on simple moving average (demo)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export / Settings card -->
+                    <div style="width:280px">
+                        <div class="card">
+                            <div class="small muted">Export / Settings</div>
+                            <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+                                <button class="ghost" id="exportCsv">Export CSV</button>
+                                <button class="ghost" id="settings">Settings</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions list -->
+                <div class="transactions card" id="txListWrap">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <h3 style="margin:0">Transactions</h3>
+                        <div class="small muted">Sorted by date (newest)</div>
+                    </div>
+
+                    <!-- List container filled by JS -->
+                    <div id="txList" style="margin-top:12px"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Hidden Add Expense Modal (simple). Uses inline styles for brevity. -->
+    <div id="modal"
+        style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6)">
+        <div
+            style="width:420px;padding:18px;border-radius:12px;background:var(--card);border:1px solid rgba(255,255,255,0.03)">
+            <h3 style="margin-top:0">Add Expense</h3>
+            <div style="display:grid;grid-template-columns:1fr 120px;gap:8px">
+                <!-- Description + Amount inputs -->
+                <input id="desc" placeholder="Description (eg. Lunch)" />
+                <input id="amount" type="number" placeholder="Amount" />
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+                <select id="category" style="flex:1">
+                    <option>Food</option>
+                    <option>Transport</option>
+                    <option>Groceries</option>
+                    <option>Bills</option>
+                    <option>Entertainment</option>
+                    <option>Other</option>
+                </select>
+                <input id="date" type="date" />
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+                <button class="ghost" id="cancelModal">Cancel</button>
+                <button class="btn" id="saveModal">Save</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
